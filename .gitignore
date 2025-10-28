@@ -4,7 +4,7 @@ obj/
 out/
 artifacts/
 
-# IDE і редактори
+# IDE settings
 .vs/
 .vscode/
 *.suo
@@ -12,7 +12,7 @@ artifacts/
 *.userosscache
 *.sln.docstates
 
-# Тестові та пакувальні файли
+# Test & coverage outputs
 TestResults/
 *.nupkg
 *.snupkg
@@ -20,16 +20,26 @@ TestResults/
 *.trx
 *.coverage*
 
-# Кеші та тимчасові файли
+# Temporary files
 *.tmp
 *.temp
 *.bak
 *.cache
 *.pid
 
-# Системні файли
+# OS files
 Thumbs.db
 Desktop.ini
 
 # Vagrant
 .vagrant/
+
+# SQLite
+volhub.db
+volhub.db-journal
+
+# User secrets
+**/secrets.json
+
+# Generated artefacts
+*.generated.cs

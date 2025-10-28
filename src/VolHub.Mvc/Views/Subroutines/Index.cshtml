@@ -1,0 +1,23 @@
+@{
+    ViewData["Title"] = "Підзадачі";
+}
+
+<h2 class="mb-3">Підзадачі</h2>
+<p class="text-muted">
+    Оберіть інструмент: розрахунок BMI, нормалізація ПІБ або геодистанція за формулою Гаверсина.
+</p>
+
+<ul class="list-group">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>Калькулятор індексу маси тіла (BMI)</span>
+        <a class="btn btn-outline-primary btn-sm" asp-action="Bmi">Відкрити</a>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>TextTool: нормалізація ПІБ та підрахунок символів і слів</span>
+        <a class="btn btn-outline-primary btn-sm" asp-action="TextTool">Відкрити</a>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>GeoDistance: відстань між координатами (Haversine)</span>
+        <a class="btn btn-outline-primary btn-sm" asp-action="Geo">Відкрити</a>
+    </li>
+</ul>

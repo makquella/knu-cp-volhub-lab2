@@ -1,0 +1,42 @@
+@{
+    ViewData["Title"] = "Головна";
+}
+
+<section class="py-5 text-center">
+    <h1 class="display-5 fw-semibold mb-3">VolHub · Лабораторна робота 3</h1>
+    <p class="lead text-muted mb-4">
+        ASP.NET Core MVC + OAuth2 (Auth0). Зареєструйтесь, увійдіть через Auth0 та відкрийте набір підпроцедур:
+        BMI, TextTool і GeoDistance.
+    </p>
+    <div class="d-flex justify-content-center gap-3">
+        <a class="btn btn-primary btn-lg" asp-controller="Account" asp-action="Login">Увійти через Auth0</a>
+        <a class="btn btn-outline-primary btn-lg" asp-controller="Subroutines" asp-action="Index">Перейти до підпроцедур</a>
+    </div>
+</section>
+
+<section class="row g-4">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Auth0 + профіль</h5>
+                <p class="card-text">Реєстрація з валідацією, логін через Auth0 та редагування профілю з ПІБ і телефоном.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Підпроцедури</h5>
+                <p class="card-text">BMI-калькулятор, нормалізація ПІБ із лічильниками та геодистанція за формулою Haversine.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Документація</h5>
+                <p class="card-text">README містить кроки запуску, налаштування секретів, міграції та чекліст для захисту.</p>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,63 @@
+@model VolHub.Mvc.Models.TextToolInput
+@{
+    ViewData["Title"] = "TextTool";
+}
+
+<h2 class="mb-3">TextTool: нормалізація ПІБ</h2>
+<p class="text-muted">
+    Інструмент прибирає зайві пробіли, перетворює ПІБ у вигляд «Прізвище Ім'я По-батькові»,
+    а також рахує кількість символів та слів. Додатково можна перевірити телефон і e-mail.
+</p>
+
+<form asp-action="TextTool" method="post" class="row g-3">
+    @Html.AntiForgeryToken()
+
+    <div class="col-12">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    </div>
+
+    <div class="col-lg-6">
+        <label asp-for="FullName" class="form-label"></label>
+        <input asp-for="FullName" class="form-control" placeholder="Наприклад: петренко іван сергійович" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+        <small class="text-muted">Зайві пропуски видаляються автоматично.</small>
+    </div>
+
+    <div class="col-lg-3">
+        <label asp-for="Phone" class="form-label"></label>
+        <input asp-for="Phone" class="form-control" type="tel" placeholder="+380XXXXXXXXX" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <div class="col-lg-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" placeholder="name@example.com" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <button class="btn btn-primary" type="submit">Нормалізувати</button>
+    </div>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(Model.NormalizedName))
+{
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Результат</h5>
+            <p class="mb-2">
+                <strong>Нормалізований ПІБ:</strong> @Model.NormalizedName
+            </p>
+            <p class="mb-2">
+                <strong>Кількість символів:</strong> @Model.CharacterCount
+            </p>
+            <p class="mb-0">
+                <strong>Кількість слів:</strong> @Model.WordCount
+            </p>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

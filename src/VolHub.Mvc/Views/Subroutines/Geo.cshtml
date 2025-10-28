@@ -1,0 +1,62 @@
+@model VolHub.Mvc.Models.GeoInput
+@{
+    ViewData["Title"] = "GeoDistance";
+}
+
+<h2 class="mb-3">Відстань між координатами (Haversine)</h2>
+<p class="text-muted">
+    Вкажіть широту та довготу у градусах (наприклад 50.45, 30.52). Допустимі діапазони: широта -90...90, довгота -180...180.
+</p>
+
+<form asp-action="Geo" method="post" class="row g-3">
+    @Html.AntiForgeryToken()
+
+    <div class="col-12">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Lat1" class="form-label"></label>
+        <input asp-for="Lat1" class="form-control" type="number" step="any" placeholder="50.45" inputmode="decimal" />
+        <span asp-validation-for="Lat1" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Lon1" class="form-label"></label>
+        <input asp-for="Lon1" class="form-control" type="number" step="any" placeholder="30.52" inputmode="decimal" />
+        <span asp-validation-for="Lon1" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Lat2" class="form-label"></label>
+        <input asp-for="Lat2" class="form-control" type="number" step="any" placeholder="49.84" inputmode="decimal" />
+        <span asp-validation-for="Lat2" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Lon2" class="form-label"></label>
+        <input asp-for="Lon2" class="form-control" type="number" step="any" placeholder="24.03" inputmode="decimal" />
+        <span asp-validation-for="Lon2" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <button class="btn btn-primary" type="submit">Розрахувати</button>
+    </div>
+</form>
+
+@if (Model?.Km is not null)
+{
+    <div class="alert alert-info mt-4">
+        <strong>Відстань:</strong> @Model.Km.Value.ToString("N3") км (метод Haversine)
+    </div>
+
+    <p class="mt-2">
+        <span class="fw-semibold">Підказка:</span> можна побачити маршрут в
+        <a target="_blank" rel="noopener"
+           href="https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=@Model.Lat1,%20@Model.Lon1;%20@Model.Lat2,%20@Model.Lon2">
+            OpenStreetMap
+        </a>.
+    </p>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

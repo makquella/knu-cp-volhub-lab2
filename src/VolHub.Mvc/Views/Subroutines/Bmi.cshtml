@@ -1,0 +1,63 @@
+@model VolHub.Mvc.Models.BmiInput
+@{
+    ViewData["Title"] = "BMI";
+}
+
+<h2 class="mb-3">Калькулятор BMI</h2>
+<p class="text-muted">
+    Введіть зріст у сантиметрах та вагу в кілограмах. Формула: <strong>BMI = вага (кг) / (зріст (м))²</strong>.
+</p>
+
+<form asp-action="Bmi" method="post" class="row g-3">
+    @Html.AntiForgeryToken()
+
+    <div class="col-12">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="HeightCm" class="form-label"></label>
+        <div class="input-group">
+            <input asp-for="HeightCm" class="form-control" type="number" step="0.5" min="50" max="260" placeholder="Наприклад 178" />
+            <span class="input-group-text">см</span>
+        </div>
+        <span asp-validation-for="HeightCm" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="WeightKg" class="form-label"></label>
+        <div class="input-group">
+            <input asp-for="WeightKg" class="form-control" type="number" step="0.1" min="10" max="400" placeholder="Наприклад 72.5" />
+            <span class="input-group-text">кг</span>
+        </div>
+        <span asp-validation-for="WeightKg" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <button class="btn btn-primary" type="submit">Розрахувати</button>
+    </div>
+</form>
+
+@if (Model.Bmi is double bmi)
+{
+    <div class="alert alert-success mt-4">
+        <strong>Індекс маси тіла:</strong> @bmi<br />
+        <strong>Категорія:</strong> @Model.Category
+    </div>
+}
+
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">Інтерпретація BMI</h5>
+        <ul class="mb-0">
+            <li><strong>Недовага</strong>: &lt; 18.5</li>
+            <li><strong>Норма</strong>: 18.5 – 24.9</li>
+            <li><strong>Надмірна вага</strong>: 25.0 – 29.9</li>
+            <li><strong>Ожиріння</strong>: ≥ 30.0</li>
+        </ul>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

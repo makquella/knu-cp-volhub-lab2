@@ -1,0 +1,35 @@
+# Build and tooling artefacts
+bin/
+obj/
+out/
+artifacts/
+
+# IDE і редактори
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Тестові та пакувальні файли
+TestResults/
+*.nupkg
+*.snupkg
+*.log
+*.trx
+*.coverage*
+
+# Кеші та тимчасові файли
+*.tmp
+*.temp
+*.bak
+*.cache
+*.pid
+
+# Системні файли
+Thumbs.db
+Desktop.ini
+
+# Vagrant
+.vagrant/

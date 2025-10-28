@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- включаем упаковку и делаем глобальный инструмент -->
+    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>volhub</ToolCommandName>
+
+    <!-- метаданные пакета -->
+    <PackageId>VolHub.Tool</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Artem Luhovyi</Authors>
+    <Company>KNU PST</Company>
+    <PackageDescription>VolHub Minimal API as a .NET global tool</PackageDescription>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VolHub.Domain\VolHub.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+</Project>

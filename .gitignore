@@ -43,3 +43,12 @@ volhub.db-journal
 
 # Generated artefacts
 *.generated.cs
+
+# Reports
+*.docx
+*.doc
+*.docm
+~$*.docx
+~$*.doc
+~$*.docm
+.~lock.*

@@ -1,0 +1,67 @@
+@model VolHub.Mvc.Models.ViewModels.EventSearchViewModel
+@{
+    ViewData["Title"] = "Пошук подій";
+}
+
+<h2 class="mb-3">Розширений пошук подій</h2>
+<p class="text-muted">
+    Фільтр виконує запит з приєднанням довідників категорій та локацій, дозволяючи комбінувати умови за датами, списком категорій та частинами значень.
+</p>
+
+<form asp-action="Index" method="get" class="row g-3 align-items-end">
+    <div class="col-md-3">
+        <label asp-for="Form.StartFrom" class="form-label"></label>
+        <input asp-for="Form.StartFrom" class="form-control" type="datetime-local" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Form.StartTo" class="form-label"></label>
+        <input asp-for="Form.StartTo" class="form-control" type="datetime-local" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Form.CategoryIds" class="form-label"></label>
+        <select asp-for="Form.CategoryIds" asp-items="Model.Categories" class="form-select" multiple size="3"></select>
+        <small class="text-muted">Утримуйте Ctrl/Command для вибору кількох опцій.</small>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Form.TitleStartsWith" class="form-label"></label>
+        <input asp-for="Form.TitleStartsWith" class="form-control" placeholder="Наприклад, Осінн" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Form.OrganizerEndsWith" class="form-label"></label>
+        <input asp-for="Form.OrganizerEndsWith" class="form-control" placeholder="Наприклад, UA" />
+    </div>
+    <div class="col-md-12">
+        <button type="submit" class="btn btn-primary">Знайти події</button>
+        <a asp-action="Index" class="btn btn-outline-secondary ms-2">Скинути</a>
+    </div>
+</form>
+
+<hr class="my-4" />
+
+@if (Model.Results.Count == 0)
+{
+    <div class="alert alert-warning">
+        Події за заданими критеріями не знайдені. Спробуйте послабити фільтри.
+    </div>
+}
+else
+{
+    <p class="fw-semibold">Знайдено @Model.Results.Count подій (показано не більше 100).</p>
+    <div class="list-group">
+        @foreach (var evt in Model.Results)
+        {
+            <a class="list-group-item list-group-item-action" asp-controller="VolunteerEvents" asp-action="Details" asp-route-id="@evt.Id">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="mb-1">@evt.Title</h5>
+                        <p class="mb-1 text-muted">@evt.Category | @evt.Venue</p>
+                        <small>Початок: @evt.StartDateUtc.ToLocalTime():f • Кінець: @evt.EndDateUtc.ToLocalTime():f</small>
+                    </div>
+                    <span class="align-self-center text-primary">
+                        Переглянути →
+                    </span>
+                </div>
+            </a>
+        }
+    </div>
+}

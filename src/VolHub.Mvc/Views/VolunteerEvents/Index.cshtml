@@ -1,0 +1,45 @@
+@model IReadOnlyList<VolHub.Mvc.Models.VolunteerEvent>
+@{
+    ViewData["Title"] = "Волонтерські події";
+}
+
+<h2 class="mb-3">Волонтерські події VolHub</h2>
+<p class="text-muted mb-4">
+    Центральна таблиця подій із прив'язкою до категорій та локацій.
+</p>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+        <tr>
+            <th>Назва</th>
+            <th>Категорія</th>
+            <th>Локація</th>
+            <th>Початок</th>
+            <th>Кінець</th>
+            <th>Місткість</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var evt in Model)
+        {
+            <tr>
+                <td>@evt.Title</td>
+                <td>@evt.EventCategory.Name</td>
+                <td>@evt.Venue.Name, @evt.Venue.City</td>
+                <td>@evt.StartDateUtc.ToLocalTime():g</td>
+                <td>@evt.EndDateUtc.ToLocalTime():g</td>
+                <td>@evt.Capacity</td>
+                <td class="text-end">
+                    <a class="btn btn-outline-primary btn-sm"
+                       asp-action="Details"
+                       asp-route-id="@evt.Id">
+                        Деталі
+                    </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

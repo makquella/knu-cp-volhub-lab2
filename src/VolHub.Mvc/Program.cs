@@ -10,9 +10,30 @@ using VolHub.Mvc.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Database
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
+// Database (configurable provider)
+builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var provider = (configuration["Database:Provider"] ?? "Sqlite").Trim().ToLowerInvariant();
+
+    switch (provider)
+    {
+        case "sqlserver":
+            options.UseSqlServer(configuration.GetConnectionString("SqlServer"));
+            break;
+        case "postgres":
+        case "postgresql":
+            options.UseNpgsql(configuration.GetConnectionString("Postgres"));
+            break;
+        case "inmemory":
+            options.UseInMemoryDatabase(configuration.GetConnectionString("InMemory") ?? "VolHubInMemory");
+            break;
+        case "sqlite":
+        default:
+            options.UseSqlite(configuration.GetConnectionString("Sqlite"));
+            break;
+    }
+});
 
 // MVC + localization
 builder.Services.AddControllersWithViews();

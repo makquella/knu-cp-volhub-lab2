@@ -1,0 +1,65 @@
+@model VolHub.Mvc.Models.ViewModels.VenueDetailsViewModel
+@{
+    ViewData["Title"] = $"Локація: {Model.Venue.Name}";
+}
+
+<h2 class="mb-3">@Model.Venue.Name</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Місто</dt>
+    <dd class="col-sm-9">@Model.Venue.City</dd>
+
+    <dt class="col-sm-3">Адреса</dt>
+    <dd class="col-sm-9">@(!string.IsNullOrWhiteSpace(Model.Venue.Address) ? Model.Venue.Address : "-")</dd>
+
+    <dt class="col-sm-3">Приміщення</dt>
+    <dd class="col-sm-9">@(!string.IsNullOrWhiteSpace(Model.Venue.Room) ? Model.Venue.Room : "-")</dd>
+</dl>
+
+<h3 class="h5 mb-3">Пов'язані події</h3>
+
+@if (Model.Events.Count == 0)
+{
+    <div class="alert alert-info">Зараз у цій локації подій не заплановано.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr>
+                <th>Назва</th>
+                <th>Категорія</th>
+                <th>Початок</th>
+                <th>Кінець</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var evt in Model.Events)
+            {
+                <tr>
+                    <td>@evt.Title</td>
+                    <td>@evt.Category</td>
+                    <td>@evt.StartDateUtc.ToLocalTime():g</td>
+                    <td>@evt.EndDateUtc.ToLocalTime():g</td>
+                    <td class="text-end">
+                        <a class="btn btn-outline-primary btn-sm"
+                           asp-controller="VolunteerEvents"
+                           asp-action="Details"
+                           asp-route-id="@evt.Id">
+                            Деталі
+                        </a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
+
+<div class="mt-4">
+    <a class="btn btn-outline-secondary" asp-action="Index">
+        ← До списку локацій
+    </a>
+</div>

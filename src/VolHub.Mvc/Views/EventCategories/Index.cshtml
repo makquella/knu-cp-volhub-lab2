@@ -1,0 +1,37 @@
+@model IReadOnlyList<VolHub.Mvc.Models.EventCategory>
+@{
+    ViewData["Title"] = "Категорії подій";
+}
+
+<h2 class="mb-3">Категорії подій</h2>
+<p class="text-muted mb-4">
+    Довідник категорій, які використовуються для волонтерських активностей VolHub.
+</p>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+        <tr>
+            <th>Назва</th>
+            <th>Опис</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@category.Name</td>
+                <td>@(string.IsNullOrWhiteSpace(category.Description) ? "-" : category.Description)</td>
+                <td class="text-end">
+                    <a class="btn btn-outline-primary btn-sm"
+                       asp-action="Details"
+                       asp-route-id="@category.Id">
+                        Переглянути
+                    </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

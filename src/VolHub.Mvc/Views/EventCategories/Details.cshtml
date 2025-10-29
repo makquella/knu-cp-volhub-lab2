@@ -1,0 +1,55 @@
+@model VolHub.Mvc.Models.ViewModels.EventCategoryDetailsViewModel
+@{
+    ViewData["Title"] = $"Категорія: {Model.Category.Name}";
+}
+
+<h2 class="mb-3">@Model.Category.Name</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Опис</h5>
+        <p class="card-text">
+            @(string.IsNullOrWhiteSpace(Model.Category.Description)
+                ? "Опис відсутній."
+                : Model.Category.Description)
+        </p>
+    </div>
+</div>
+
+<h3 class="h5 mb-3">Заплановані події</h3>
+
+@if (Model.Events.Count == 0)
+{
+    <div class="alert alert-info">
+        Для цієї категорії ще не заплановано подій.
+    </div>
+}
+else
+{
+    <div class="list-group">
+        @foreach (var evt in Model.Events)
+        {
+            <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-start"
+               asp-controller="VolunteerEvents"
+               asp-action="Details"
+               asp-route-id="@evt.Id">
+                <div>
+                    <div class="fw-semibold">@evt.Title</div>
+                    <small class="text-muted">
+                        @evt.Venue<br />
+                        Початок: @evt.StartDateUtc.ToLocalTime():g
+                    </small>
+                </div>
+                <span class="badge bg-primary rounded-pill">
+                    Завершення: @evt.EndDateUtc.ToLocalTime():t
+                </span>
+            </a>
+        }
+    </div>
+}
+
+<div class="mt-4">
+    <a class="btn btn-outline-secondary" asp-action="Index">
+        ← До списку категорій
+    </a>
+</div>

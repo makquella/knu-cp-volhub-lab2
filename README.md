@@ -1,152 +1,191 @@
 # VolHub
 
-VolHub — навчальний проєкт з кросплатформного програмування. Репозиторій містить три послідовні лабораторні роботи:
-
-- **Lab 1:** кросплатформний застосунок на .NET з модульними тестами;
-- **Lab 2:** пакування застосунку у NuGet та розгортання через Vagrant на декількох ОС;
-- **Lab 3:** ASP.NET Core MVC застосунок з інтеграцією OAuth2 (Auth0).
+VolHub — навчальний багатокомпонентний проєкт із курсу **«Кросплатформне програмування»**. Репозиторій демонструє поступове ускладнення: від консольного застосунку й тестів (ЛР1), створення NuGet-пакету та інфраструктури (ЛР2), до ASP.NET Core MVC з OAuth2 (ЛР3) та підтримки кількох СУБД із довідниками й пошуком (ЛР4).
 
 ---
 
-## Lab 1 — C# Application & Tests
+## Структура рішення
 
-### Тематика та структура
-- Тема: управління волонтерськими запитами.
-- Основні проєкти:
-  - `src/VolHub.Domain` — доменна модель та сервіси.
-  - `src/VolHub.Api` — Minimal API (можна запускати як глобальний .NET tool).
-  - `tests/VolHub.Tests` — модульні тести на xUnit.
+| Шлях | Опис |
+|------|------|
+| `src/VolHub.Domain` | Доменні моделі та бізнес-логіка (ЛР1). |
+| `src/VolHub.Api` | Minimal API / консольні сценарії (ЛР1–ЛР2). |
+| `src/VolHub.Mvc` | ASP.NET Core MVC застосунок (ЛР3–ЛР4). |
+| `tests/VolHub.Tests` | Модульні тести (xUnit). |
+| `Vagrantfile`, `scripts/` | Інфраструктура для ЛР2 (Vagrant). |
+| `VolHub_Zvit_UA.docx` | Поточний шаблон звіту (оновлено для ЛР4). |
 
-### Як запустити застосунок
-```powershell
-dotnet restore
-dotnet run --project src/VolHub.Api
-```
-API відкриється на `http://localhost:5000`, Swagger доступний за `/swagger`.
-
-### Тести
-```powershell
-dotnet test
-```
-Тести перевіряють бізнес-правила сервісу призначення заявок.
-
-### Документація
-- Опис теми, інструкції зі збірки та запуску наведені в цьому README.
-- Коментарі у коді уточнюють призначення ключових класів та сценаріїв.
+Далі — покрокові інструкції для запуску кожної лабораторної роботи.
 
 ---
 
-## Lab 2 — Vagrant & Multi-OS Deployment
+## Лабораторна робота 1 — «C# застосунок і тести»
 
-### Крок 1. Пакування та публікація NuGet-пакету
-```powershell
-# Створення пакета (глобальний .NET tool)
-dotnet pack src/VolHub.Api -c Release
+**Мета:** побудувати базову доменну логіку, запустити Minimal API та написати модульні тести.
 
-# Публікація у BaGet (локальний NuGet-сервер)
-dotnet nuget push src/VolHub.Api/bin/Release/VolHub.Tool.1.0.0.nupkg `
-  --source http://localhost:5555/v3/index.json `
-  --api-key local-api-key
-```
-> Публікація виконується після старту віртуальної машини `baget` (див. нижче) або будь-якого іншого сервера з підтримкою NuGet API.
+### Кроки
+1. **Відновити залежності**
+   ```powershell
+   dotnet restore
+   ```
+2. **Запустити Minimal API**
+   ```powershell
+   dotnet run --project src/VolHub.Api
+   ```
+   - Базова адреса: `http://localhost:5000`
+   - Swagger UI: `http://localhost:5000/swagger`
+3. **Запустити тести**
+   ```powershell
+   dotnet test
+   ```
 
-### Крок 2. Розгортання через Vagrant
-```powershell
-vagrant up baget      # BaGet (Ubuntu, Docker)
-vagrant up ubuntu     # Ubuntu 22.04 + .NET 8
-vagrant up fedora     # Fedora 41 + .NET 8
-```
-- Ubuntu та Fedora машини встановлюють .NET SDK, підключають приватний NuGet (`VolHubBaGet`), інсталюють глобальний інструмент `volhub` та запускають API на `0.0.0.0:5000`.
-- Порти проброшені на хост:
-  - BaGet: `http://localhost:5555/v3/index.json`
-  - Ubuntu API: `http://localhost:5001/swagger`
-  - Fedora API: `http://localhost:5002/swagger`
-
-### Очистка
-```powershell
-vagrant halt
-vagrant destroy -f
-```
-
-### Чекліст для демонстрації
-1. Показати пакування (`dotnet pack`) та публікацію в BaGet.
-2. Запустити `vagrant up` та продемонструвати роботу API на кожній ОС.
-3. Пояснити сценарій використання NuGet-джерела.
+**Основні артефакти:**  
+`src/VolHub.Domain`, `src/VolHub.Api`, `tests/VolHub.Tests`
 
 ---
 
-## Lab 3 — ASP.NET Core MVC + OAuth2
+## Лабораторна робота 2 — «NuGet + Vagrant»
 
-### Функціональність
-- Головна сторінка з описом лабораторної та швидкими кнопками логіну / переходу до підпроцедур.
-- Авторизація через Auth0 (OIDC). Анонімні користувачі при зверненні до підпроцедур отримують редирект на логін.
-- Сторінка реєстрації з полями: логін (унікальний, ≤50), ПІБ (≤500), телефон у форматі `+380XXXXXXXXX`, пароль + підтвердження (8–16, цифра, спецсимвол, велика літера), e-mail (RFC 5322).
-- Профіль користувача (редагування ПІБ/телефону) з валідацією та повідомленням про успішне збереження.
-- Три підпроцедури (доступні лише після входу):
-  1. **BMI** — розрахунок індексу, легенда категорій.
-  2. **TextTool** — нормалізація ПІБ, рахунок символів і слів, валідація телефону/e-mail.
-  3. **Geo** — відстань між координатами (Haversine) з підказками.
+**Мета:** створити NuGet-пакет, підняти інфраструктуру на Vagrant та протестувати багатоплатформний запуск.
 
-Кожна форма містить `@Html.AntiForgeryToken()`, валідаційні повідомлення та плейсхолдери.
+### Передумови
+- Встановлений Vagrant + VirtualBox/Hyper-V
+- Локальний реєстр NuGet (BaGet) або контейнер із ним
 
-### Підготовка Auth0
-- Створіть застосунок типу **Regular Web App**.
-- Налаштуйте:
-  - Allowed Callback URLs: `https://localhost:5032/signin-oidc`
-  - Allowed Logout URLs: `https://localhost:5032/signout-callback-oidc`
-  - Allowed Web Origins: `https://localhost:5032`
+### Кроки
+1. **Побудувати пакунок**
+   ```powershell
+   dotnet pack src/VolHub.Api -c Release
+   ```
+2. **Опублікувати у BaGet**
+   ```powershell
+   dotnet nuget push src/VolHub.Api/bin/Release/VolHub.Tool.*.nupkg `
+     --source http://localhost:5555/v3/index.json `
+     --api-key local-api-key
+   ```
+3. **Підняти інфраструктуру**
+   ```powershell
+   vagrant up baget      # Реєстр NuGet (Ubuntu + Docker)
+   vagrant up ubuntu     # Ubuntu 22.04 + .NET 8
+   vagrant up fedora     # Fedora 41 + .NET 8
+   ```
+4. **Зупинити/прибрати машини**
+   ```powershell
+   vagrant halt
+   vagrant destroy -f
+   ```
 
-### Локальний запуск
+**Основні артефакти:**  
+`Vagrantfile`, сценарії `dotnet pack / dotnet nuget push`, опис у `README`, гілка з конфігураціями машин.
+
+---
+
+## Лабораторна робота 3 — «ASP.NET Core MVC + Auth0»
+
+**Мета:** створити вебзастосунок із реєстрацією, авторизацією через OAuth2 (Auth0) та трьома підпрограмами (BMI, TextTool, Geo).
+
+### Передумови
+- Обліковий запис Auth0 (або інший OIDC-провайдер)
+- .NET SDK 8.0
+
+### Кроки
+1. **Перейти в MVC проєкт**
+   ```powershell
+   cd src/VolHub.Mvc
+   ```
+2. **Відновити та зібрати**
+   ```powershell
+   dotnet restore
+   dotnet build
+   ```
+3. **Налаштувати secrets для Auth0**
+   ```powershell
+   dotnet user-secrets set "Auth0:Domain" "<your-domain>"
+   dotnet user-secrets set "Auth0:ClientId" "<client-id>"
+   dotnet user-secrets set "Auth0:ClientSecret" "<client-secret>"
+   ```
+4. **Оновити базу (SQLite за замовчуванням)**
+   ```powershell
+   dotnet ef database update
+   ```
+5. **Запустити застосунок**
+   ```powershell
+   dotnet run --launch-profile "VolHub.Mvc"
+   ```
+   - URL: `https://localhost:5032`
+   - Доступні сторінки:
+     - реєстрація/вхід (Auth0)
+     - профіль користувача
+     - підпрограми BMI, TextTool, Geo (після авторизації)
+
+**Основні артефакти:**  
+контролери `AccountController`, `SubroutinesController`, Razor-сторінки у `Views/Account`, `Views/Subroutines`, моделі `AppUserProfile`, валідації паролів.
+
+---
+
+## Лабораторна робота 4 — «Кілька СУБД, довідники та пошук»
+
+**Мета:** розширити вебзастосунок для роботи з чотирма СУБД, додати довідники, центральну таблицю подій та сторінку пошуку із складними фільтрами.
+
+### Передумови
+- .NET SDK 8.0
+- Одна або кілька СУБД:
+  - SQLite (за замовчуванням)
+  - SQL Server
+  - PostgreSQL
+  - InMemory (для тестових сценаріїв)
+
+### Кроки
+1. **Налаштувати провайдера БД**
+   - У `src/VolHub.Mvc/appsettings.json` змінити `Database:Provider` на `Sqlite`, `SqlServer`, `Postgres` або `InMemory`.
+   - Оновити відповідний рядок у `ConnectionStrings`.
+2. **Застосувати міграції**
+   ```powershell
+   dotnet ef database update --project src/VolHub.Mvc --startup-project src/VolHub.Mvc
+   ```
+3. **(Опційно) Оновити Auth0 secrets** — якщо ще не налаштовано (див. ЛР3).
+4. **Запустити застосунок**
+   ```powershell
+   dotnet run --project src/VolHub.Mvc --launch-profile "VolHub.Mvc"
+   ```
+5. **Перевірити новий функціонал**
+   - меню «Довідники» → «Категорії подій», «Локації проведення»
+   - «Події» → список волонтерських заходів
+   - «Пошук» → фільтри (дата від/до, множинний вибір категорій, початок назви, закінчення організатора)
+
+### Що нового в коді
+- `Program.cs` перемикає `UseSqlite / UseSqlServer / UseNpgsql / UseInMemoryDatabase`.
+- `Models/EventModels.cs`, `Data/AppDbContext.cs`, міграція `20251029215031_Lab4Events*` та сид-дані.
+- Нові контролери й представлення: `EventCategoriesController`, `VenuesController`, `VolunteerEventsController`, `EventSearchController` (+ Razor-сторінки).
+- Оновлений `_Layout.cshtml` із новою навігацією.
+
+---
+
+## Загальні команди (нагадування)
+
 ```powershell
-cd src/VolHub.Mvc
-
-dotnet restore
+# Збірка всього рішення
 dotnet build
 
-# User-secrets (заповніть власними значеннями)
-dotnet user-secrets set "Auth0:Domain" "makquella.eu.auth0.com"
-dotnet user-secrets set "Auth0:ClientId" "<YOUR_CLIENT_ID>"
-dotnet user-secrets set "Auth0:ClientSecret" "<YOUR_CLIENT_SECRET>"
+# Тести
+dotnet test
 
-# Міграції та база (SQLite)
-dotnet ef database update
+# Створення нової міграції (MVC)
+dotnet ef migrations add <Name> --project src/VolHub.Mvc --startup-project src/VolHub.Mvc
 
-# Запуск
-dotnet run --launch-profile "VolHub.Mvc"
+# Оновити базу для поточного провайдера
+dotnet ef database update --project src/VolHub.Mvc --startup-project src/VolHub.Mvc
 ```
-
-### База даних
-- SQLite, файл `volhub.db` винесено у `.gitignore`.
-- Міграція `AddUserProfile` створює таблицю профілів з унікальними індексами на логін та e-mail. Паролі зберігаються у вигляді хешу.
-
-### Чекліст скріншотів / демонстрації
-1. `dotnet run` + відкриття головної (`https://localhost:5032`).
-2. Форма реєстрації: показати помилки (пароль/телефон) та успішну реєстрацію.
-3. Логін через Auth0 (адреса `.../signin-oidc` у рядку браузера).
-4. Сторінка профілю з редагуванням ПІБ/телефону.
-5. Спроба доступу до підпроцедур до/після авторизації.
-6. Робота BMI/TextTool/Geo (ввід даних → результат).
-7. Сторінка 404 та приклад summary валідації.
-8. Огляд структури `volhub.db` (наприклад, у DB Browser for SQLite).
 
 ---
 
-## Корисні команди
+## Звіти
 
-- Відновлення та збірка всього рішення:
-  ```powershell
-  dotnet restore
-  dotnet build
-  ```
-- Лінтинг (за потреби) — використовувати стандартні Visual Studio / Rider інструменти.
-- Перезапис міграцій (якщо потрібно):
-  ```powershell
-  dotnet ef migrations add <Name> --project src/VolHub.Mvc --startup-project src/VolHub.Mvc
-  dotnet ef database update --project src/VolHub.Mvc --startup-project src/VolHub.Mvc
-  ```
+- `VolHub_Zvit_UA.docx` — актуальний шаблон звіту для ЛР4 (містить структуру, опис етапів і місця для скріншотів).
+- Для попередніх лабораторних можна використовувати історію репозиторію або адаптувати поточний документ.
 
 ---
 
 ## Ліцензія
 
-Проєкт розповсюджується за ліцензією MIT. Див. файли ліцензій у директоріях залежностей для додаткових деталей.
+Проєкт опублікований під ліцензією MIT. Повний текст — у файлі [`LICENSE`](LICENSE).
